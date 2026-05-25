@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch lernen: Richtig oder Falsch? (6 Aufgaben)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .card-container { perspective: 1000px; }
+        .swipe-card { transition: transform 0.4s ease, opacity 0.4s ease; }
+        .swipe-left { transform: translateX(-150%) rotate(-15deg) !important; opacity: 0; }
+        .swipe-right { transform: translateX(150%) rotate(15deg) !important; opacity: 0; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <main class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 transition-all relative overflow-hidden">
+        
+        <header class="text-center mb-6">
+            <span class="inline-block bg-rose-50 text-rose-600 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-3">
+                ⚡ Quiz-Aufgabe 8 (Erweitert)
+            </span>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+                Fakten-Check: Richtig oder Falsch?
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-600">
+                Wische die Karte nach <strong>rechts (Richtig)</strong> oder nach <strong>links (Falsch)</strong>. Alternativ kannst du die Buttons nutzen!
+            </p>
+        </header>
+
+        <section class="card-container relative h-64 my-6 flex items-center justify-center select-none">
+            <div id="card-deck" class="w-full h-full relative">
+                </div>
+        </section>
+
+        <div id="quiz-controls" class="flex justify-center gap-4 my-4">
+            <button onclick="handleButtonAction(false)" class="flex-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-center cursor-pointer flex items-center justify-center gap-2">
+                ❌ Falsch
+            </button>
+            <button onclick="handleButtonAction(true)" class="flex-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-center cursor-pointer flex items-center justify-center gap-2">
+                ✅ Richtig
+            </button>
+        </div>
+
+        <div id="feedback-panel" class="hidden rounded-xl p-4 border text-xs sm:text-sm my-4 fade-in">
+            <p id="feedback-text" class="leading-relaxed"></p>
+        </div>
+
+        <div id="result-screen" class="hidden text-center py-6 fade-in">
+            <span class="text-4xl mb-3 block">🏆</span>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Quiz beendet!</h3>
+            <p id="score-text" class="text-sm text-slate-600 mb-6"></p>
+            <button onclick="restartQuiz()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-3 px-4 rounded-xl transition-colors cursor-pointer shadow-md">
+                Wiederholen
+            </button>
+        </div>
+
+        <footer class="pt-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
+            <span id="progress-text">Karte 1 von 6</span>
+            <span>Keine Tastatur nötig</span>
+        </footer>
+
+    </main>
+
+    <script>
+        // Auf 6 Aufgaben erweiterte Datenstruktur
+        const quizData = [
+            {
+                statement: "„Die Ordnungszahl beim Datum ist maskulin.“",
+                isCorrect: false,
+                explanation: "<strong>Das ist falsch!</strong> Weil das sächliche Wort <em>число</em> im Hintergrund steht, muss die Ordnungszahl zwingend neutral (sächlich) sein."
+            },
+            {
+                statement: "„Das Wort число ist sächlich.“",
+                isCorrect: true,
+                explanation: "<strong>Absolut richtig!</strong> Das Wort <em>число</em> endet auf <strong>-о</strong> und gehört somit grammatikalisch fest zum Neutrum."
+            },
+            {
+                statement: "„Man sagt Третье марта.“",
+                isCorrect: true,
+                explanation: "<strong>Korrekt!</strong> <em>Третье</em> ist die sächliche Form der Ordnungszahl 'drei' (weiche Endung) und passt perfekt zum verdeckten Wort <em>число</em>."
+            },
+            {
+                statement: "„Beim Datum '1. Juni' verwendet man die Form Первая июня.“",
+                isCorrect: false,
+                explanation: "<strong>Falsch!</strong> <em>Первая</em> ist weiblich. Auch wenn Juni (июнь) maskulin ist, richtet sich die Zahl nach dem unsichtbaren <em>число</em> (Neutrum). Richtig ist: <strong>Первое июня</strong>."
+            },
+            {
+                statement: "„Die sächliche Endung für Ordnungszahlen beim Datum ist meistens -ое oder -ее.“",
+                isCorrect: true,
+                explanation: "<strong>Stimmt genau!</strong> Je nachdem, ob der Stamm hart oder weich ist, enden die neutralen Ordnungszahlen auf <strong>-ое</strong> (первое, второе) oder <strong>-ее</strong> (третье)."
+            },
+            {
+                statement: "„Ausgeschrieben heißt der '2. Januar' auf Russischen Второй января.“",
+                isCorrect: false,
+                explanation: "<strong>Leider falsch!</strong> <em>Второй</em> ist die männliche Form. Da wir nach dem sächlichen Prinzip verfahren, lautet die fehlerfreie Variante: <strong>Второе января</strong>."
+            }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let startX = 0;
+        let isDragging = false;
+
+        const deck = document.getElementById('card-deck');
+        const feedbackPanel = document.getElementById('feedback-panel');
+        const feedbackText = document.getElementById('feedback-text');
+        const controls = document.getElementById('quiz-controls');
+        const resultScreen = document.getElementById('result-screen');
+        const progressText = document.getElementById('progress-text');
+
+        function initQuiz() {
+            currentIndex = 0;
+            score = 0;
+            feedbackPanel.classList.add('hidden');
+            controls.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            renderCard();
+        }
+
+        function renderCard() {
+            deck.innerHTML = '';
+            if (currentIndex >= quizData.length) {
+                showResults();
+                return;
+            }
+
+            progressText.textContent = `Karte ${currentIndex + 1} von ${quizData.length}`;
+
+            const data = quizData[currentIndex];
+            const card = document.createElement('div');
+            card.id = "active-card";
+            card.className = "swipe-card absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100 border-2 border-slate-200 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center cursor-grab active:cursor-grabbing z-30 touch-none";
+            
+            card.innerHTML = `
+                <div class="text-blue-500 text-3xl mb-4">💡</div>
+                <p class="text-base sm:text-lg font-bold text-slate-800 leading-snug px-2">${data.statement}</p>
+                <div class="absolute bottom-3 text-[10px] text-slate-400 uppercase tracking-widest sm:hidden">← Wische Links | Wische Rechts →</div>
+            `;
+
+            card.addEventListener('touchstart', dragStart, {passive: true});
+            card.addEventListener('touchmove', dragMove, {passive: true});
+            card.addEventListener('touchend', dragEnd);
+
+            card.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('mouseup', dragEnd);
+
+            deck.appendChild(card);
+        }
+
+        function dragStart(e) {
+            isDragging = true;
+            startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const card = document.getElementById('active-card');
+            if (card) card.style.transition = 'none';
+        }
+
+        function dragMove(e) {
+            if (!isDragging) return;
+            const card = document.getElementById('active-card');
+            if (!card) return;
+
+            const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const deltaX = currentX - startX;
+            
+            card.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.05}deg)`;
+        }
+
+        function dragEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const card = document.getElementById('active-card');
+            if (!card) return;
+
+            card.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+            
+            const transformString = card.style.transform;
+            const match = transformString.match(/translateX\((.*?)(px|%)\)/);
+            const currentX = match ? parseFloat(match[1]) : 0;
+
+            if (currentX > 100) {
+                evaluateAnswer(true, 'swipe-right');
+            } else if (currentX < -100) {
+                evaluateAnswer(false, 'swipe-left');
+            } else {
+                card.style.transform = 'translateX(0px) rotate(0deg)';
+            }
+        }
+
+        function handleButtonAction(userAnswer) {
+            if (isDragging) return;
+            evaluateAnswer(userAnswer, userAnswer ? 'swipe-right' : 'swipe-left');
+        }
+
+        function evaluateAnswer(userAnswer, animationClass) {
+            const card = document.getElementById('active-card');
+            if (!card) return;
+
+            card.className = `swipe-card absolute inset-0 bg-slate-100 border-2 border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center ${animationClass}`;
+            
+            const currentQuestion = quizData[currentIndex];
+            const isCorrectAnswer = (userAnswer === currentQuestion.isCorrect);
+
+            if (isCorrectAnswer) score++;
+
+            feedbackPanel.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-800', 'bg-rose-50', 'border-rose-200', 'text-rose-800');
+            if (isCorrectAnswer) {
+                feedbackPanel.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800');
+                feedbackText.innerHTML = `🎉 <strong>Richtig geantwortet!</strong><br>${currentQuestion.explanation}`;
+            } else {
+                feedbackPanel.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-800');
+                feedbackText.innerHTML = `❌ <strong>Leider knapp vorbei!</strong><br>${currentQuestion.explanation}`;
+            }
+
+            currentIndex++;
+
+            // Erhöhte Atempause (3,5 Sekunden), da die Erklärungen inhaltlich tiefgehender sind
+            setTimeout(() => {
+                feedbackPanel.classList.add('hidden');
+                renderCard();
+            }, 3500);
+        }
+
+        function showResults() {
+            deck.innerHTML = '';
+            controls.classList.add('hidden');
+            feedbackPanel.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            progressText.textContent = "Fertig!";
+            
+            document.getElementById('score-text').innerHTML = `Du hast <strong>${score} von ${quizData.length} Punkten</strong> erreicht.<br>` + 
+                (score === quizData.length ? "Perfekt! Du hast die Logik hinter den russischen Datumsangaben absolut verinnerlicht." : "Gut gearbeitet! Mach das Quiz ruhig noch einmal, um die 100% zu knacken.");
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
