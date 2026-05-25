@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch lernen: Direktes Feedback</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <main class="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 md:p-10 transition-all">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <span class="inline-block bg-blue-50 text-blue-600 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-3">
+                Interaktive Aufgabe 3 (Erweitert)
+            </span>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
+                Die Grammatik-Regel vervollständigen
+            </h1>
+            <p class="text-sm sm:text-base text-slate-600">
+                Wähle die passenden Wörter aus. Du erhältst sofort beim Klicken eine Rückmeldung!
+            </p>
+        </header>
+
+        <!-- Interaktiver Lückentext -->
+        <section class="bg-slate-50 border border-slate-200 rounded-xl p-5 sm:p-6 md:p-8 text-slate-800 text-base sm:text-lg leading-loose tracking-wide">
+            
+            <p class="mb-6">
+                Oft fragen Schüler, warum man beim Datum im Russischen das 
+                <!-- Lücke 1 -->
+                <select id="gap1" onchange="validateGap(this, 'Neutrum')" class="mx-1 bg-white border-2 border-slate-300 rounded-lg px-2 py-1 text-sm sm:text-base font-bold text-blue-600 focus:outline-none focus:border-blue-500 cursor-pointer transition-all">
+                    <option value="">...</option>
+                    <option value="Maskulinum">Maskulinum</option>
+                    <option value="Femininum">Femininum</option>
+                    <option value="Neutrum">Neutrum</option>
+                </select> 
+                verwendet. Das ist leicht zu erklären!
+            </p>
+
+            <p class="mb-6">
+                In Gedanken steht zwischen der Zahl und dem Monat nämlich immer das unsichtbare Wort 
+                <!-- Lücke 2 -->
+                <select id="gap2" onchange="validateGap(this, 'число')" class="mx-1 bg-white border-2 border-slate-300 rounded-lg px-2 py-1 text-sm sm:text-base font-bold text-blue-600 focus:outline-none focus:border-blue-500 cursor-pointer transition-all">
+                    <option value="">...</option>
+                    <option value="день">день</option>
+                    <option value="число">число</option>
+                    <option value="месяц">месяц</option>
+                </select>.
+            </p>
+
+            <p class="mb-6">
+                Da dieses versteckte Wort im Russischen grammatikalisch dem 
+                <!-- Lücke 3 -->
+                <select id="gap3" onchange="validateGap(this, 'среднего')" class="mx-1 bg-white border-2 border-slate-300 rounded-lg px-2 py-1 text-sm sm:text-base font-bold text-blue-600 focus:outline-none focus:border-blue-500 cursor-pointer transition-all">
+                    <option value="">...</option>
+                    <option value="мужского">мужского</option>
+                    <option value="женского">женского</option>
+                    <option value="среднего">среднего</option>
+                </select> 
+                Geschlecht (рода) angehört, gilt das auch für die Ziffern.
+            </p>
+
+            <p class="mb-6">
+                Aus diesem Grund enden die Ordnungszahlen beim Datum wie первое, второе oder 
+                <!-- Lücke 4 -->
+                <select id="gap4" onchange="validateGap(this, 'третье')" class="mx-1 bg-white border-2 border-slate-300 rounded-lg px-2 py-1 text-sm sm:text-base font-bold text-blue-600 focus:outline-none focus:border-blue-500 cursor-pointer transition-all">
+                    <option value="">...</option>
+                    <option value="третий">третий</option>
+                    <option value="третья">третья</option>
+                    <option value="третье">третье</option>
+                </select> 
+                immer auf die sächliche Endung.
+            </p>
+
+            <p class="mb-6">
+                Ein konkretes Beispiel dafür ist die russische Phrase für „der erste Januar“: 
+                <!-- Lücke 5 -->
+                <select id="gap5" onchange="validateGap(this, 'Первое января')" class="mx-1 bg-white border-2 border-slate-300 rounded-lg px-2 py-1 text-sm sm:text-base font-bold text-blue-600 focus:outline-none focus:border-blue-500 cursor-pointer transition-all">
+                    <option value="">...</option>
+                    <option value="Первый января">Первый января</option>
+                    <option value="Первое января">Первое января</option>
+                    <option value="Первая января">Первая января</option>
+                </select>.
+            </p>
+
+            <p>
+                Und das Gleiche gilt für „der dritte März“, was auf Russisch korrekt 
+                <!-- Lücke 6 -->
+                <select id="gap6" onchange="validateGap(this, 'Третье марта')" class="mx-1 bg-white border-2 border-slate-300 rounded-lg px-2 py-1 text-sm sm:text-base font-bold text-blue-600 focus:outline-none focus:border-blue-500 cursor-pointer transition-all">
+                    <option value="">...</option>
+                    <option value="Третье марта">Третье марта</option>
+                    <option value="Третий марта">Третий марта</option>
+                    <option value="Третья марта">Третья марта</option>
+                </select> 
+                heißt.
+            </p>
+
+        </section>
+
+        <!-- Gesamt-Erfolgsmeldung (wird erst eingeblendet, wenn alles richtig ist) -->
+        <div id="success-card" class="hidden rounded-xl p-5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm my-6 fade-in">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">🎉</span>
+                <div>
+                    <strong>Phantastisch!</strong> Du hast alle 6 Lücken fehlerfrei ausgefüllt und die Logik hinter den russischen Datumsangaben verstanden.
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer mit Neustart -->
+        <footer class="pt-4 border-t border-slate-100 flex justify-between items-center">
+            <span class="text-xs text-slate-400">Sofortige Auswertung bei Auswahl</span>
+            <button onclick="resetExercise()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-sm px-4 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H19" /></svg>
+                Neustart
+            </button>
+        </footer>
+
+    </main>
+
+    <script>
+        // Einzelprüfung für jede Lücke beim Ändern des Werts (onchange)
+        function validateGap(selectElement, correctAnswer) {
+            const val = selectElement.value;
+            
+            // Standard-Klassen entfernen
+            selectElement.classList.remove('border-slate-300', 'text-blue-600', 'border-emerald-500', 'text-emerald-700', 'bg-emerald-50/50', 'border-rose-500', 'text-rose-700', 'bg-rose-50/50');
+            
+            if (val === "") {
+                // Wenn wieder das leere "..." gewählt wird
+                selectElement.classList.add('border-slate-300', 'text-blue-600');
+            } else if (val === correctAnswer) {
+                // Richtig gewählt
+                selectElement.classList.add('border-emerald-500', 'text-emerald-700', 'bg-emerald-50/50');
+            } else {
+                // Falsch gewählt
+                selectElement.classList.add('border-rose-500', 'text-rose-700', 'bg-rose-50/50');
+            }
+
+            checkAllSolved();
+        }
+
+        // Überprüft, ob alle 6 Lücken gleichzeitig korrekt sind
+        function checkAllSolved() {
+            const successCard = document.getElementById('success-card');
+            
+            const g1 = document.getElementById('gap1').value === 'Neutrum';
+            const g2 = document.getElementById('gap2').value === 'число';
+            const g3 = document.getElementById('gap3').value === 'среднего';
+            const g4 = document.getElementById('gap4').value === 'третье';
+            const g5 = document.getElementById('gap5').value === 'Первое января';
+            const g6 = document.getElementById('gap6').value === 'Третье марта';
+
+            if (g1 && g2 && g3 && g4 && g5 && g6) {
+                successCard.classList.remove('hidden');
+            } else {
+                successCard.classList.add('hidden');
+            }
+        }
+
+        // Neustart-Funktion
+        function resetExercise() {
+            for (let i = 1; i <= 6; i++) {
+                const el = document.getElementById('gap' + i);
+                el.value = "";
+                el.className = "mx-1 bg-white border-2 border-slate-300 rounded-lg px-2 py-1 text-sm sm:text-base font-bold text-blue-600 focus:outline-none focus:border-blue-500 cursor-pointer transition-all";
+            }
+            document.getElementById('success-card').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
