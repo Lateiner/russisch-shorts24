@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch lernen: Detektiv-Spiel (6 Beispiele)</title>
+    <!-- Tailwind CSS CDN für modernes, responsives Design -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <main class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 md:p-10 transition-all">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <span class="inline-block bg-amber-50 text-amber-700 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-3">
+                🕵️‍♂️ Detektiv-Aufgabe 4 (Erweitert)
+            </span>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
+                Großes Grammatik-Quiz: Finde die 4 Fehler!
+            </h1>
+            <p class="text-sm text-slate-600 max-w-2xl mx-auto">
+                Unter diesen 6 Datumsangaben haben sich genau 4 Fehler versteckt. Erinnere dich: Nur das Neutrum (sächlich) ist korrekt, weil das Wort число im Hintergrund steht. Klicke die Karten an, um sie zu prüfen!
+            </p>
+        </header>
+
+        <!-- Detektiv-Spielfeld: 3 Spalten auf Desktop/Tablet, 1 Spalte auf Smartphones -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 my-6">
+            
+            <!-- Karte 1: FALSCH -->
+            <button onclick="investigateCard(this, false, 'Das Wort первый ist männlich. Datumsangaben brauchen aber das sächliche Neutrum, da sie sich auf das versteckte Wort число beziehen. Richtig: Первое января.')" 
+                    class="group bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Eintrag A</div>
+                <div class="text-lg md:text-xl font-bold text-slate-800 group-hover:text-amber-600 transition-colors">Первый января</div>
+                <div class="status-label mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Ungeprüft</div>
+            </button>
+
+            <!-- Karte 2: RICHTIG -->
+            <button onclick="investigateCard(this, true, 'Perfekt! Второе марта ist fehlerfrei. Die Ordnungszahl endet korrekt auf die sächliche Endung -ое.')" 
+                    class="group bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Eintrag B</div>
+                <div class="text-lg md:text-xl font-bold text-slate-800 group-hover:text-amber-600 transition-colors">Второе марта</div>
+                <div class="status-label mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Ungeprüft</div>
+            </button>
+
+            <!-- Karte 3: FALSCH -->
+            <button onclick="investigateCard(this, false, 'Das Wort третий ist männlich. Da Datumsangaben im Russischen sächlich sein müssen, ist dies ein Fehler. Richtig: Третье мая.')" 
+                    class="group bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Eintrag C</div>
+                <div class="text-lg md:text-xl font-bold text-slate-800 group-hover:text-amber-600 transition-colors">Третий мая</div>
+                <div class="status-label mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Ungeprüft</div>
+            </button>
+
+            <!-- Karte 4: FALSCH -->
+            <button onclick="investigateCard(this, false, 'Das Wort первая ist weiblich (-ая). Das versteckte Wort число verlangt jedoch zwingend das Neutrum. Richtig: Первое июня.')" 
+                    class="group bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Eintrag D</div>
+                <div class="text-lg md:text-xl font-bold text-slate-800 group-hover:text-amber-600 transition-colors">Первая июня</div>
+                <div class="status-label mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Ungeprüft</div>
+            </button>
+
+            <!-- Karte 5: RICHTIG -->
+            <button onclick="investigateCard(this, true, 'Stimmt genau! Третье августа ist absolut richtig. Die Endung -ее ist die weiche Variante der sächlichen Endung.')" 
+                    class="group bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Eintrag E</div>
+                <div class="text-lg md:text-xl font-bold text-slate-800 group-hover:text-amber-600 transition-colors">Третье августа</div>
+                <div class="status-label mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Ungeprüft</div>
+            </button>
+
+            <!-- Karte 6: FALSCH -->
+            <button onclick="investigateCard(this, false, 'Das Wort второй ist männlich. Da wir über das Datum sprechen, müssen wir die sächliche Form wählen. Richtig: Второе декабря.')" 
+                    class="group bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Eintrag F</div>
+                <div class="text-lg md:text-xl font-bold text-slate-800 group-hover:text-amber-600 transition-colors">Второй декабря</div>
+                <div class="status-label mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Ungeprüft</div>
+            </button>
+
+        </section>
+
+        <!-- Dynamisches Ermittler-Feedback -->
+        <div id="feedback-panel" class="hidden rounded-xl p-5 border text-sm my-6 transition-all fade-in">
+            <div class="flex items-start gap-3">
+                <div id="feedback-badge" class="text-white text-xs font-bold px-2.5 py-1 rounded-md shrink-0 uppercase tracking-wider mt-0.5"></div>
+                <div>
+                    <p id="feedback-description" class="leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Erfolgsmeldung, wenn alle 4 Fehler gefunden wurden -->
+        <div id="case-closed-card" class="hidden rounded-xl p-5 bg-emerald-600 text-white text-sm my-6 shadow-md fade-in">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🎉</span>
+                <div>
+                    <h4 class="font-bold text-base">Hervorragende Arbeit, Meisterdetektiv!</h4>
+                    <p class="opacity-90">Du hast erfolgreich alle 4 Fehler (Eintrag A, C, D und F) aufgespürt. Männliche oder weibliche Ordnungszahlen haben beim russischen Datum keine Chance!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer mit Counter und Neustart -->
+        <footer class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <span id="counter-label" class="text-sm font-semibold text-slate-500">Gefundene Fehler: 0 von 4</span>
+            <button onclick="resetDetective()" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-sm px-4 py-2 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H19" /></svg>
+                Neustart
+            </button>
+        </footer>
+
+    </main>
+
+    <script>
+        const feedbackPanel = document.getElementById('feedback-panel');
+        const feedbackBadge = document.getElementById('feedback-badge');
+        const feedbackDescription = document.getElementById('feedback-description');
+        const caseClosedCard = document.getElementById('case-closed-card');
+        const counterLabel = document.getElementById('counter-label');
+        
+        let wrongCardsFound = 0;
+
+        function investigateCard(buttonElement, isCorrect, explanationText) {
+            const label = buttonElement.querySelector('.status-label');
+            
+            // Karte deaktivieren
+            buttonElement.disabled = true;
+            buttonElement.classList.remove('bg-slate-50', 'hover:border-amber-400', 'border-slate-200');
+            buttonElement.querySelector('div:nth-child(2)').classList.remove('text-slate-800', 'group-hover:text-amber-600');
+
+            feedbackPanel.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'bg-rose-50', 'border-rose-200');
+
+            if (isCorrect) {
+                // Richtiges Datum angeklickt (kein Fehler vorhanden)
+                buttonElement.classList.add('bg-emerald-50', 'border-emerald-500');
+                buttonElement.querySelector('div:nth-child(2)').classList.add('text-emerald-700');
+                label.textContent = "Fehlerfrei";
+                label.className = "status-label mt-4 text-xs font-bold text-emerald-600 uppercase tracking-widest";
+
+                feedbackPanel.classList.add('bg-emerald-50', 'border-emerald-200');
+                feedbackBadge.className = "bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shrink-0 uppercase tracking-wider mt-0.5";
+                feedbackBadge.textContent = "Korrekt";
+                feedbackDescription.className = "text-emerald-800";
+            } else {
+                // Falsches Datum angeklickt (Fehler erfolgreich gefunden)
+                buttonElement.classList.add('bg-rose-50', 'border-rose-500');
+                buttonElement.querySelector('div:nth-child(2)').classList.add('text-rose-700');
+                label.textContent = "Fehler entlarvt";
+                label.className = "status-label mt-4 text-xs font-bold text-rose-600 uppercase tracking-widest";
+
+                feedbackPanel.classList.add('bg-rose-50', 'border-rose-200');
+                feedbackBadge.className = "bg-rose-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shrink-0 uppercase tracking-wider mt-0.5";
+                feedbackBadge.textContent = "Fehler";
+                feedbackDescription.className = "text-rose-800";
+
+                wrongCardsFound++;
+                counterLabel.textContent = `Gefundene Fehler: ${wrongCardsFound} von 4`;
+            }
+
+            feedbackDescription.innerHTML = explanationText;
+
+            // Gewinnbedingung abfragen (4 Fehler)
+            if (wrongCardsFound === 4) {
+                caseClosedCard.classList.remove('hidden');
+                counterLabel.className = "text-sm font-bold text-emerald-600";
+                counterLabel.textContent = `Gefundene Fehler: 4 von 4 (Alle gefunden!)`;
+            }
+        }
+
+        // Spiel zurücksetzen
+        function resetDetective() {
+            wrongCardsFound = 0;
+            feedbackPanel.classList.add('hidden');
+            caseClosedCard.classList.add('hidden');
+            counterLabel.className = "text-sm font-semibold text-slate-500";
+            counterLabel.textContent = "Gefundene Fehler: 0 von 4";
+
+            const buttons = document.querySelectorAll('section button');
+            buttons.forEach((btn) => {
+                btn.disabled = false;
+                btn.className = "group bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-xl p-5 text-center transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400";
+                
+                const textDiv = btn.querySelector('div:nth-child(2)');
+                textDiv.className = "text-lg md:text-xl font-bold text-slate-800 group-hover:text-amber-600 transition-colors";
+                
+                const label = btn.querySelector('.status-label');
+                label.textContent = "Ungeprüft";
+                label.className = "status-label mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest";
+            });
+        }
+    </script>
+</body>
+</html>
