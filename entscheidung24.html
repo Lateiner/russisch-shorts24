@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch lernen: Interaktiver Entscheidungsbaum</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-3 sm:p-4">
+
+    <main class="w-full max-w-xl bg-white rounded-2xl shadow-xl border border-slate-100 p-5 sm:p-8 transition-all relative overflow-hidden">
+        
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <span class="inline-block bg-teal-50 text-teal-600 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-2">
+                🌳 Grammatik-Guide 10
+            </span>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+                Datums-Entscheidungsbaum
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto">
+                Klicke dich durch die Logikfragen, um Schritt für Schritt die korrekte russische Form zu bilden!
+            </p>
+        </header>
+
+        <!-- Dynamische Breadcrumb-Fortschrittsanzeige -->
+        <nav class="flex items-center justify-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-slate-400 font-medium mb-6 bg-slate-50 py-2 px-3 rounded-xl border border-slate-100">
+            <span id="step-badge-1" class="text-teal-600 font-bold">1. Startwert</span>
+            <span class="text-slate-300">➔</span>
+            <span id="step-badge-2">2. Denk-Wort</span>
+            <span class="text-slate-300">➔</span>
+            <span id="step-badge-3">3. Endung</span>
+            <span class="text-slate-300">➔</span>
+            <span id="step-badge-4">4. Ergebnis</span>
+        </nav>
+
+        <!-- Der aktive Flussdiagramm-Knoten -->
+        <section id="flow-card" class="bg-gradient-to-b from-slate-50/50 to-slate-50 border border-slate-100 rounded-2xl p-5 sm:p-6 text-center min-h-[180px] flex flex-col justify-between fade-in">
+            
+            <!-- Frage oder Anweisung -->
+            <div class="my-auto">
+                <p id="flow-question" class="text-base sm:text-lg font-bold text-slate-800 leading-snug mb-6">
+                    <!-- Wird per JS befüllt -->
+                </p>
+                
+                <!-- Antwortoptionen (Buttons) -->
+                <div id="flow-options" class="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-md mx-auto">
+                    <!-- Wird per JS befüllt -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Fehler-Feedback-Overlay (schließt sich nach Klick selbst) -->
+        <div id="wrong-feedback" class="hidden mt-4 rounded-xl p-4 bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm text-center fade-in">
+            <strong>Huch, das war eine Sackgasse! 💡</strong> <span id="wrong-text"></span> Versuche es noch einmal!
+        </div>
+
+        <!-- Footer mit Reset-Steuerung -->
+        <footer class="pt-4 mt-6 border-t border-slate-100 flex justify-between items-center text-[11px] sm:text-xs text-slate-400">
+            <span>Keine Tastatur erforderlich</span>
+            <button onclick="restartFlow()" class="text-teal-600 hover:text-teal-700 font-bold transition-colors cursor-pointer flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H19" /></svg>
+                Von vorne beginnen
+            </button>
+        </footer>
+
+    </main>
+
+    <script>
+        // Logische Baumstruktur der App
+        const flowTree = {
+            start: {
+                question: "Welches Datum willst du heute beispielhaft bilden?",
+                step: 1,
+                options: [
+                    { text: "Den 1. Tag im Monat", nextNode: "hiddenWord", choiceValue: "1." },
+                    { text: "Den 3. Tag im Monat", nextNode: "hiddenWord", choiceValue: "3." }
+                ]
+            },
+            hiddenWord: {
+                question: "An welches verdeckte (aber mitgedachte) russische Wort musst du beim Datum immer denken?",
+                step: 2,
+                options: [
+                    { text: "число (Zahl/Anzahl)", nextNode: "ending", isCorrect: true },
+                    { text: "месяц (Monat)", nextNode: "wrong_month", isCorrect: false },
+                    { text: "день (Tag)", nextNode: "wrong_day", isCorrect: false }
+                ]
+            },
+            ending: {
+                question: "Welches grammatikalische Geschlecht und welche Endung hat die Ordnungszahl folglich wegen „число“?",
+                step: 3,
+                options: [
+                    { text: "maskulin (-ый / -ой)", nextNode: "wrong_gender", isCorrect: false },
+                    { text: "sächlich (-ое / -ее)", nextNode: "finalResult", isCorrect: true },
+                    { text: "feminin (-ая / -яя)", nextNode: "wrong_gender", isCorrect: false }
+                ]
+            },
+            
+            // Sackgassen / Fehlererklärungen
+            wrong_month: {
+                error: "Nicht ganz! Obwohl wir ein Datum nennen, bestimmt nicht der 'Monat' (месяц, maskulin) die Form der Zahl. Denk an das Wort für die Ziffer selbst!"
+            },
+            wrong_day: {
+                error: "Achtung, Falle! Im Deutschen sagen wir zwar 'der erste Tag', im Russischen steht grammatikalisch aber das neutrale Wort für 'Zahl' im Fokus."
+            },
+            wrong_gender: {
+                error: "Überlege noch mal: Das mitgedachte Wort <em>число</em> endet auf <strong>-о</strong>. Wörter auf -o gehören im Russischen zum...?"
+            }
+        };
+
+        // Zustandsspeicher
+        let currentSelection = {
+            targetDay: "", // "1." oder "3."
+        };
+        let currentNodeKey = "start";
+
+        const questionEl = document.getElementById('flow-question');
+        const optionsContainer = document.getElementById('flow-options');
+        const wrongFeedback = document.getElementById('wrong-feedback');
+        const wrongText = document.getElementById('wrong-text');
+        const flowCard = document.getElementById('flow-card');
+
+        function renderNode(nodeKey) {
+            wrongFeedback.classList.add('hidden');
+            const node = flowTree[nodeKey];
+            
+            // Highlights der Navigationsschritte anpassen
+            updateBreadcrumbs(node.step);
+
+            // Inhalt updaten
+            questionEl.textContent = node.question;
+            optionsContainer.innerHTML = '';
+
+            // Einspaltiges oder zweispaltiges Layout je nach Buttonanzahl
+            if (node.options.length > 2) {
+                optionsContainer.className = "grid grid-cols-1 gap-2.5 max-w-md mx-auto";
+            } else {
+                optionsContainer.className = "grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-md mx-auto";
+            }
+
+            // Buttons rendern
+            node.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full bg-white border-2 border-slate-200 hover:border-teal-500 hover:bg-teal-50/30 text-slate-700 font-semibold text-xs sm:text-sm p-3.5 rounded-xl shadow-sm transition-all cursor-pointer text-center focus:outline-none";
+                btn.innerHTML = opt.text;
+                btn.onclick = () => handleChoice(opt, nodeKey);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleChoice(option, parentKey) {
+            // Falls im ersten Schritt ein Wert gewählt wurde, merken
+            if (parentKey === "start") {
+                currentSelection.targetDay = option.choiceValue;
+            }
+
+            const nextKey = option.nextNode;
+
+            // Prüfen, ob es sich um einen Fehlerknoten handelt
+            if (nextKey.startsWith("wrong_")) {
+                wrongText.innerHTML = flowTree[nextKey].error;
+                wrongFeedback.classList.remove('hidden');
+                return; // Navigation stoppen, User muss neu wählen
+            }
+
+            // Wenn alles korrekt ist, weitergehen
+            currentNodeKey = nextKey;
+            
+            if (currentNodeKey === "finalResult") {
+                renderFinalScreen();
+            } else {
+                // Karten-Animation triggern
+                flowCard.classList.remove('fade-in');
+                void flowCard.offsetWidth; // Reflow auslösen
+                flowCard.classList.add('fade-in');
+                renderNode(currentNodeKey);
+            }
+        }
+
+        function renderFinalScreen() {
+            updateBreadcrumbs(4);
+            wrongFeedback.classList.add('hidden');
+
+            // Ermittlung des passenden russischen Endergebnisses
+            let russianWord = currentSelection.targetDay === "1." ? "Первое" : "Третье";
+            let grammaticalNote = currentSelection.targetDay === "1." ? "harte sächliche Endung <strong>-ое</strong>" : "weiche sächliche Endung <strong>-ее</strong>";
+
+            questionEl.innerHTML = `
+                <div class="text-emerald-500 text-4xl mb-2">🎉</div>
+                <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1">Erfolgreich hergeleitet!</span>
+                <div class="text-2xl sm:text-3xl font-extrabold text-slate-900 my-2">${russianWord}.</div>
+                <p class="text-xs sm:text-sm text-slate-600 font-normal max-w-sm mx-auto leading-relaxed">
+                    Hervorragend! Du hast für den <strong>${currentSelection.targetDay}</strong> über das verdeckte Wort <strong>число</strong> (Neutrum) die ${grammaticalNote} hergeleitet.
+                </p>
+            `;
+
+            optionsContainer.className = "block max-w-xs mx-auto mt-6";
+            optionsContainer.innerHTML = `
+                <button onclick="restartFlow()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-md transition-all cursor-pointer">
+                    Anderen Pfad testen
+                </button>
+            `;
+        }
+
+        function updateBreadcrumbs(currentStep) {
+            for (let i = 1; i <= 4; i++) {
+                const badge = document.getElementById(`step-badge-${i}`);
+                if (i === currentStep) {
+                    badge.className = "text-teal-600 font-bold underline decoration-2 underline-offset-4";
+                } else if (i < currentStep) {
+                    badge.className = "text-emerald-500 font-medium line-through opacity-70";
+                } else {
+                    badge.className = "text-slate-400 font-medium";
+                }
+            }
+        }
+
+        function restartFlow() {
+            currentSelection.targetDay = "";
+            currentNodeKey = "start";
+            flowCard.classList.remove('fade-in');
+            void flowCard.offsetWidth;
+            flowCard.classList.add('fade-in');
+            renderNode(currentNodeKey);
+        }
+
+        // Initialisierung beim Laden
+        window.onload = () => renderNode("start");
+    </script>
+</body>
+</html>
