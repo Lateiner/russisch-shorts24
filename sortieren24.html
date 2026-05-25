@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch lernen: Reihenfolge ordnen</title>
+    <!-- Tailwind CSS CDN für modernes, responsives Interface -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <main class="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 md:p-10 transition-all">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <span class="inline-block bg-teal-50 text-teal-600 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-3">
+                🧩 Logik-Aufgabe 6
+            </span>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
+                Bringe die Logik in die richtige Reihenfolge
+            </h1>
+            <p class="text-sm text-slate-600">
+                Wie ist die logische Kette aufgebaut, die wir im Kopf haben, um die sächliche Endung beim Datum zu verstehen? Ordne die drei Bausteine von links nach rechts.
+            </p>
+        </header>
+
+        <!-- Bereich für das Ergebnis (Zielzone) -->
+        <section class="bg-slate-900 text-white rounded-xl p-6 text-center my-6 shadow-inner select-none">
+            <div class="text-xs text-slate-400 font-mono tracking-widest uppercase mb-4">Deine Reihenfolge / Порядок</div>
+            
+            <div id="drop-target-container" 
+                 ondragover="allowDrop(event)" 
+                 ondrop="drop(event)"
+                 class="flex flex-wrap items-center justify-center gap-3 min-h-[60px] p-2 bg-slate-800/50 border-2 border-dashed border-slate-700 rounded-xl transition-all">
+                <!-- Hier landen die sortierten Karten -->
+            </div>
+        </section>
+
+        <!-- Bereich für die ungeordneten Bausteine (Startzone) -->
+        <section class="my-6">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider text-center mb-3">
+                Verfügbare Bausteine (Ziehen oder nacheinander anklicken):
+            </div>
+            <div id="words-source-container" 
+                 ondragover="allowDrop(event)" 
+                 ondrop="dropBack(event)"
+                 class="flex flex-wrap justify-center gap-3 min-h-[60px] p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                
+                <!-- Wort 1 -->
+                <div id="item-janvarja" 
+                     draggable="true" 
+                     ondragstart="drag(event)"
+                     onclick="clickMove(this)"
+                     data-order="3"
+                     class="bg-white border-2 border-slate-200 hover:border-teal-400 text-slate-800 px-5 py-3 rounded-xl font-bold text-lg shadow-sm cursor-grab active:cursor-grabbing transition-all select-none">
+                    января
+                </div>
+
+                <!-- Wort 2 -->
+                <div id="item-chislo" 
+                     draggable="true" 
+                     ondragstart="drag(event)"
+                     onclick="clickMove(this)"
+                     data-order="2"
+                     class="bg-white border-2 border-slate-200 hover:border-teal-400 text-slate-800 px-5 py-3 rounded-xl font-bold text-lg shadow-sm cursor-grab active:cursor-grabbing transition-all select-none">
+                    число
+                </div>
+
+                <!-- Wort 3 -->
+                <div id="item-pervoe" 
+                     draggable="true" 
+                     ondragstart="drag(event)"
+                     onclick="clickMove(this)"
+                     data-order="1"
+                     class="bg-white border-2 border-slate-200 hover:border-teal-400 text-slate-800 px-5 py-3 rounded-xl font-bold text-lg shadow-sm cursor-grab active:cursor-grabbing transition-all select-none">
+                    Первое
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Feedback-Meldung -->
+        <div id="feedback-card" class="hidden rounded-xl p-5 border text-sm my-6 transition-all fade-in"></div>
+
+        <!-- Footer mit Steuerung -->
+        <footer class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <span class="text-xs text-slate-400">Mobilfreundlich (Keine Tastatur erforderlich)</span>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="checkOrder()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-colors cursor-pointer shadow-sm">Reihenfolge prüfen</button>
+                <button onclick="resetExercise()" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H19" /></svg>
+                    Neustart
+                </button>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        const sourceContainer = document.getElementById('words-source-container');
+        const targetContainer = document.getElementById('drop-target-container');
+        const feedbackCard = document.getElementById('feedback-card');
+
+        // Drag-and-Drop Kernfunktionen
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const element = document.getElementById(data);
+            targetContainer.appendChild(element);
+            feedbackCard.classList.add('hidden');
+        }
+
+        function dropBack(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const element = document.getElementById(data);
+            sourceContainer.appendChild(element);
+            feedbackCard.classList.add('hidden');
+        }
+
+        // Klick-Steuerung für mobile Touchscreens
+        function clickMove(element) {
+            feedbackCard.classList.add('hidden');
+            if (element.parentElement === sourceContainer) {
+                targetContainer.appendChild(element);
+            } else {
+                sourceContainer.appendChild(element);
+            }
+        }
+
+        // Überprüfung der exakten Reihenfolge
+        function checkOrder() {
+            const currentItems = targetContainer.children;
+            
+            // 1. Prüfen, ob alle 3 Bausteine platziert wurden
+            if (currentItems.length < 3) {
+                feedbackCard.className = "p-4 border text-sm rounded-xl bg-amber-50 border-amber-200 text-amber-800 fade-in";
+                feedbackCard.innerHTML = "<strong>Unvollständig:</strong> Bitte ziehe alle 3 Bausteine in die obere Box, bevor du die Reihenfolge testest.";
+                feedbackCard.classList.remove('hidden');
+                return;
+            }
+
+            // 2. Die Daten-Attribute (1, 2, 3) abfragen
+            const val1 = currentItems[0].getAttribute('data-order');
+            const val2 = currentItems[1].getAttribute('data-order');
+            const val3 = currentItems[2].getAttribute('data-order');
+
+            feedbackCard.classList.remove('hidden');
+
+            if (val1 === "1" && val2 === "2" && val3 === "3") {
+                // RICHTIG: Первое число января
+                feedbackCard.className = "p-5 border text-sm rounded-xl bg-emerald-50 border-emerald-200 text-emerald-800 fade-in";
+                feedbackCard.innerHTML = "<strong>Perfekt geordnet! 🎉</strong> Die logische Kette lautet: <strong>Первое число января</strong> (Der erste Tag/die erste Zahl des Januars). Weil das sächliche Substantiv число im Zentrum steht, gleicht sich das Wort Первое perfekt an dessen neutrales Geschlecht an!";
+            } else {
+                // FALSCH
+                feedbackCard.className = "p-5 border text-sm rounded-xl bg-rose-50 border-rose-200 text-rose-800 fade-in";
+                feedbackCard.innerHTML = "<strong>Das ist noch nicht die richtige Logik:</strong> Erinnere dich an die Anleitung. Das Zahlwort steht am Anfang, das versteckte Wort kommt genau in die Mitte und der Monat bildet im Genitiv den Abschluss. Versuche es noch einmal!";
+            }
+        }
+
+        // Neustart der Übung
+        function resetExercise() {
+            feedbackCard.classList.add('hidden');
+            
+            // Alle Elemente zurück in die Quellbox werfen
+            const items = [
+                document.getElementById('item-janvarja'),
+                document.getElementById('item-chislo'),
+                document.getElementById('item-pervoe')
+            ];
+
+            // In einer zufälligen Reihenfolge zurücklegen, um neu herauszufordern
+            items.sort(() => Math.random() - 0.5);
+            
+            items.forEach(item => {
+                sourceContainer.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>
