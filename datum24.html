@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch lernen: Mathematisches Datums-Quiz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Entfernt die Standard-Zahlenpfeile in manchen Browsern */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+    <main class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-8 transition-all relative">
+        
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <span class="inline-block bg-amber-50 text-amber-600 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-3">
+                🔢 Quiz-Aufgabe 9
+            </span>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+                Mathematisches Datums-Quiz
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-600">
+                Lies die Frage aufmerksam durch und tippe die gesuchte Zahl über dein Ziffernfeld ein.
+            </p>
+        </header>
+
+        <!-- Quiz-Spielfeld -->
+        <section id="quiz-area" class="my-6">
+            <!-- Frage-Box -->
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-5 text-center mb-5">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">Frage</span>
+                <p id="question-text" class="text-base sm:text-lg font-semibold text-slate-800"></p>
+            </div>
+
+            <!-- Formular zur Eingabe -->
+            <form id="quiz-form" onsubmit="submitAnswer(event)" class="space-y-4">
+                <div>
+                    <label for="answer-input" class="sr-only">Deine Zahleneingabe</label>
+                    <input 
+                        type="number" 
+                        id="answer-input" 
+                        inputmode="numeric" 
+                        pattern="[0-9]*"
+                        placeholder="Zahl eingeben..." 
+                        required
+                        class="w-full text-center text-xl font-bold bg-white border-2 border-slate-200 focus:border-amber-500 focus:ring-4 focus:ring-amber-100 rounded-xl py-3 px-4 transition-all outline-none"
+                    >
+                </div>
+                
+                <button type="submit" id="submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-md transition-colors cursor-pointer text-center">
+                    Antwort prüfen
+                </button>
+            </form>
+        </section>
+
+        <!-- Dynamisches Feedback-Panel -->
+        <div id="feedback-panel" class="hidden rounded-xl p-4 border text-xs sm:text-sm my-4 fade-in">
+            <p id="feedback-text" class="leading-relaxed"></p>
+        </div>
+
+        <!-- Endbildschirm / Ergebnis -->
+        <div id="result-screen" class="hidden text-center py-6 fade-in">
+            <span class="text-4xl mb-3 block">🎯</span>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Hervorragend!</h3>
+            <p id="score-text" class="text-sm text-slate-600 mb-6"></p>
+            <button onclick="restartQuiz()" class="w-full bg-slate-950 hover:bg-slate-800 text-white font-bold text-sm py-3 px-4 rounded-xl transition-colors cursor-pointer shadow-md">
+                Nochmal spielen
+            </button>
+        </div>
+
+        <!-- Fortschrittsanzeige -->
+        <footer class="pt-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
+            <span id="progress-text">Frage 1 von 5</span>
+            <span class="flex items-center gap-1">⌨️ Nur Zahlen nötig</span>
+        </footer>
+
+    </main>
+
+    <script>
+        // Set von 5 mathematisch-linguistischen Fragen
+        const quizQuestions = [
+            {
+                question: "Welcher Tag im Monat ist „второе“?",
+                correctAnswer: 2,
+                explanation: "Genau! <strong>Второе</strong> bedeutet übersetzt 'das zweite' bzw. der <strong>2.</strong> Tag des Monats."
+            },
+            {
+                question: "Welcher Tag im Monat ist „пятое“?",
+                correctAnswer: 5,
+                explanation: "Richtig! <strong>Пятое</strong> leitet sich von 'пять' (fünf) ab und meint den <strong>5.</strong> Tag."
+            },
+            {
+                question: "Welcher Tag im Monat ist „первое“?",
+                correctAnswer: 1,
+                explanation: "Klasse! <strong>Первое</strong> ist die sächliche Form für 'das erste' – also der <strong>1.</strong> Tag des Monats."
+            },
+            {
+                question: "Welcher Tag im Monat ist „десятое“?",
+                correctAnswer: 10,
+                explanation: "Stimmt auffallend! <strong>Десятое</strong> entspricht dem <strong>10.</strong> Tag im Monat."
+            },
+            {
+                question: "Welcher Tag im Monat ist „третье“?",
+                correctAnswer: 3,
+                explanation: "Ausgezeichnet! <strong>Третье</strong> hat einen weichen Stamm und bezeichnet den <strong>3.</strong> Tag."
+            }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+
+        const questionText = document.getElementById('question-text');
+        const answerInput = document.getElementById('answer-input');
+        const feedbackPanel = document.getElementById('feedback-panel');
+        const feedbackText = document.getElementById('feedback-text');
+        const quizArea = document.getElementById('quiz-area');
+        const resultScreen = document.getElementById('result-screen');
+        const progressText = document.getElementById('progress-text');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function initQuiz() {
+            currentIndex = 0;
+            score = 0;
+            quizArea.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            feedbackPanel.classList.add('hidden');
+            answerInput.disabled = false;
+            submitBtn.disabled = false;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            feedbackPanel.classList.add('hidden');
+            answerInput.value = '';
+            
+            if (currentIndex >= quizQuestions.length) {
+                showResults();
+                return;
+            }
+
+            progressText.textContent = `Frage ${currentIndex + 1} von ${quizQuestions.length}`;
+            questionText.textContent = quizQuestions[currentIndex].question;
+            
+            // Fokus automatisch auf das Feld setzen (hilfreich auf dem Desktop)
+            setTimeout(() => answerInput.focus(), 50);
+        }
+
+        function submitAnswer(event) {
+            event.preventDefault(); // Verhindert Neuladen der Seite
+            
+            const userAnswer = parseInt(answerInput.value.trim(), 10);
+            const currentData = quizQuestions[currentIndex];
+            
+            if (isNaN(userAnswer)) return;
+
+            // Eingaben sperren während des Feedbacks
+            answerInput.disabled = true;
+            submitBtn.disabled = true;
+
+            feedbackPanel.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-800', 'bg-rose-50', 'border-rose-200', 'text-rose-800');
+
+            if (userAnswer === currentData.correctAnswer) {
+                score++;
+                feedbackPanel.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800');
+                feedbackText.innerHTML = `🎉 <strong>Perfekt!</strong><br>${currentData.explanation}`;
+            } else {
+                feedbackPanel.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-800');
+                feedbackText.innerHTML = `❌ <strong>Nicht ganz!</strong><br>Deine Eingabe war ${userAnswer}. Richtig gewesen wäre die Zahl <strong>${currentData.correctAnswer}</strong>.`;
+            }
+
+            currentIndex++;
+
+            // Nach 3 Sekunden zur nächsten Frage springen
+            setTimeout(() => {
+                answerInput.disabled = false;
+                submitBtn.disabled = false;
+                showQuestion();
+            }, 3000);
+        }
+
+        function showResults() {
+            quizArea.classList.add('hidden');
+            feedbackPanel.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            progressText.textContent = "Beendet";
+
+            document.getElementById('score-text').innerHTML = `Du hast <strong>${score} von ${quizQuestions.length} Fragen</strong> korrekt beantwortet.<br>` +
+                (score === quizQuestions.length ? "Spitze! Du hast das System der russischen Ordnungszahlen voll durchschaut!" : "Gute Arbeit! Versuche es noch einmal, um alle fehlerfrei zu knacken.");
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        // Quiz beim Laden direkt starten
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
