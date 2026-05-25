@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russisch lernen: Große Zahl-zu-Wort-Zuordnung</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .no-select { -webkit-tap-highlight-color: transparent; user-select: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-2 sm:p-4">
+
+    <main class="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-slate-100 p-4 sm:p-8 relative transition-all">
+        
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <span class="inline-block bg-indigo-50 text-indigo-600 text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-2">
+                🔗 Zuordnungs-Aufgabe 7 (Erweitert)
+            </span>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
+                Zahlen-Meister: 1 bis 10 verbinden
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
+                Tippe links eine Ziffer und rechts das passende geschriebene Wort im Neutrum an. Schaffst du alle 10?
+            </p>
+        </header>
+
+        <!-- Spielfeld-Container für absolute SVG-Positionierung -->
+        <section class="relative my-4 no-select">
+            
+            <!-- SVG Overlay für die dynamischen Verbindungslinien -->
+            <svg id="connection-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10">
+                <!-- Linien werden dynamisch per JS eingefügt -->
+            </svg>
+
+            <!-- Spalten-Layout -->
+            <div class="grid grid-cols-2 gap-16 sm:gap-40 relative z-20">
+                
+                <!-- Linke Spalte: Ziffern 1 bis 10 -->
+                <div class="flex flex-col gap-2 justify-center">
+                    <button id="left-1" onclick="selectNode('left', 1)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">1.</button>
+                    <button id="left-2" onclick="selectNode('left', 2)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">2.</button>
+                    <button id="left-3" onclick="selectNode('left', 3)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">3.</button>
+                    <button id="left-4" onclick="selectNode('left', 4)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">4.</button>
+                    <button id="left-5" onclick="selectNode('left', 5)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">5.</button>
+                    <button id="left-6" onclick="selectNode('left', 6)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">6.</button>
+                    <button id="left-7" onclick="selectNode('left', 7)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">7.</button>
+                    <button id="left-8" onclick="selectNode('left', 8)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">8.</button>
+                    <button id="left-9" onclick="selectNode('left', 9)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">9.</button>
+                    <button id="left-10" onclick="selectNode('left', 10)" class="node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">10.</button>
+                </div>
+
+                <!-- Rechte Spalte: Wörter (Zufällig durchgemischt) -->
+                <div class="flex flex-col gap-2 justify-center">
+                    <button id="right-4" onclick="selectNode('right', 4)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Четвёртое</button>
+                    <button id="right-7" onclick="selectNode('right', 7)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Седьмое</button>
+                    <button id="right-1" onclick="selectNode('right', 1)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Первое</button>
+                    <button id="right-9" onclick="selectNode('right', 9)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Девятое</button>
+                    <button id="right-2" onclick="selectNode('right', 2)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Второе</button>
+                    <button id="right-6" onclick="selectNode('right', 6)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Шестое</button>
+                    <button id="right-10" onclick="selectNode('right', 10)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Десятое</button>
+                    <button id="right-3" onclick="selectNode('right', 3)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Третье</button>
+                    <button id="right-8" onclick="selectNode('right', 8)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Восьмое</button>
+                    <button id="right-5" onclick="selectNode('right', 5)" class="node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer focus:outline-none">Пятое</button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Erfolgsmeldung -->
+        <div id="win-card" class="hidden rounded-xl p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm text-center my-4 fade-in">
+            <strong>Grandioser Erfolg! 🎉</strong> Du hast alle Ordnungszahlen von 1 bis 10 perfekt gemeistert und richtig im Kopf verknüpft!
+        </div>
+
+        <!-- Footer mit Reset-Steuerung -->
+        <footer class="pt-4 border-t border-slate-100 flex justify-between items-center text-sm">
+            <span id="status-text" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Wähle eine Ziffer...</span>
+            <button onclick="resetExercise()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H19" /></svg>
+                Zurücksetzen
+            </button>
+        </footer>
+
+    </main>
+
+    <script>
+        let selectedLeft = null;
+        let selectedRight = null;
+        let activeConnections = [];
+        
+        const svg = document.getElementById('connection-svg');
+        const statusText = document.getElementById('status-text');
+        const winCard = document.getElementById('win-card');
+
+        function selectNode(side, id) {
+            if (side === 'left') {
+                if (activeConnections.some(c => c.leftId === id)) return;
+                
+                if (selectedLeft) {
+                    document.getElementById(`left-${selectedLeft}`).className = "node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer";
+                }
+                
+                selectedLeft = id;
+                document.getElementById(`left-${id}`).className = "node-left bg-indigo-50 border border-indigo-600 text-indigo-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer";
+                statusText.textContent = "Wähle jetzt das russische Wort...";
+            } else {
+                if (activeConnections.some(c => c.rightId === id)) return;
+                if (!selectedLeft) {
+                    statusText.textContent = "Wähle zuerst links eine Ziffer!";
+                    return;
+                }
+                
+                selectedRight = id;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const leftNode = document.getElementById(`left-${selectedLeft}`);
+            const rightNode = document.getElementById(`right-${selectedRight}`);
+
+            if (selectedLeft === selectedRight) {
+                // Richtig verbunden
+                activeConnections.push({ leftId: selectedLeft, rightId: selectedRight });
+
+                [leftNode, rightNode].forEach(node => {
+                    node.className = "bg-emerald-50 border border-emerald-500 text-emerald-700 font-bold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center pointer-events-none";
+                });
+
+                drawLines();
+
+                selectedLeft = null;
+                selectedRight = null;
+                statusText.textContent = `Fortschritt: ${activeConnections.length} / 10`;
+
+                if (activeConnections.length === 10) {
+                    winCard.classList.remove('hidden');
+                    statusText.textContent = "Alle gelöst!";
+                }
+            } else {
+                // Falsch verbunden
+                rightNode.className = "bg-rose-50 border border-rose-500 text-rose-700 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center";
+                statusText.textContent = "Das passt nicht. Versuch es noch mal!";
+                
+                setTimeout(() => {
+                    rightNode.className = "node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer";
+                    leftNode.className = "node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer";
+                    selectedLeft = null;
+                    selectedRight = null;
+                }, 900);
+            }
+        }
+
+        function drawLines() {
+            svg.innerHTML = '';
+            const containerRect = svg.getBoundingClientRect();
+
+            activeConnections.forEach(conn => {
+                const btnLeft = document.getElementById(`left-${conn.leftId}`);
+                const btnRight = document.getElementById(`right-${conn.rightId}`);
+
+                const rectLeft = btnLeft.getBoundingClientRect();
+                const rectRight = btnRight.getBoundingClientRect();
+
+                const x1 = rectLeft.right - containerRect.left;
+                const y1 = rectLeft.top + (rectLeft.height / 2) - containerRect.top;
+
+                const x2 = rectRight.left - containerRect.left;
+                const y2 = rectRight.top + (rectRight.height / 2) - containerRect.top;
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#10b981'); // emerald-500
+                line.setAttribute('stroke-width', '2.5');
+                
+                svg.appendChild(line);
+            });
+        }
+
+        function resetExercise() {
+            activeConnections = [];
+            selectedLeft = null;
+            selectedRight = null;
+            svg.innerHTML = '';
+            winCard.classList.add('hidden');
+            statusText.textContent = "Wähle eine Ziffer...";
+
+            document.querySelectorAll('.node-left').forEach(node => {
+                node.className = "node-left bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-700 font-bold text-sm sm:text-base py-2 px-3 rounded-lg shadow-sm transition-all text-center cursor-pointer";
+            });
+
+            document.querySelectorAll('.node-right').forEach(node => {
+                node.className = "node-right bg-slate-50 border border-slate-200 hover:border-indigo-400 text-slate-800 font-semibold text-xs sm:text-sm py-2 px-2 rounded-lg shadow-sm transition-all text-center cursor-pointer";
+            });
+        }
+
+        window.addEventListener('resize', drawLines);
+    </script>
+</body>
+</html>
